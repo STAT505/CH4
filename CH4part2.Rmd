@@ -1,0 +1,196 @@
+---
+title: "Regression and Other Stories: Ch 4.4 - 4.7"
+output: pdf_document
+---
+
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 3, fig.width = 5)
+library(tidyverse) 
+library(gridExtra)
+set.seed(09092020)
+```
+
+When conducting data analysis, we want to avoid too strong of conclusions based on the data. Hypothesis testing and error analysis were developed to quantify this issue.
+
+### Statistical Significance
+
+- A common, binary, decision rule that __is not__ recommended is based on _statistical significance._
+ 
+\vfill
+
+- Statistical significance is defined as 
+
+\vfill
+
+- Statistical significance decisions for a regression coefficient 
+
+\vfill
+
+- More generally, an estimate is not statistically significant 
+
+
+\vfill
+
+### Hypothesis Tests
+
+The Bozeman school district has identified the proportion of covid tests that are positive as an important metric for reopening or closing schools. While describing the hypothesis test, think about how to construct a test focused on the positive test rate.
+
+\vfill
+
+- __Estimate:__ 
+
+
+\vfill
+
+- __Null and alternative hypothesis:__  choose the null and alternative hypothesis.
+
+\vfill 
+
+- __test statistic:__ 
+
+\vfill
+
+- __confidence interval:__ T
+
+\vfill
+
+- __p-value:__ describes the deviation of the data from the null, 
+
+\newpage
+
+Example: I wasn't able to find reliable data from Gallatin County, but I did get data from Virginia Tech [https://ready.vt.edu/dashboard.html](https://ready.vt.edu/dashboard.html).
+
+We will treat the last 7 days of tests as 7 data points
+
+```{r}
+tests <- c(181,181,406,326,311,307,260)
+positives <- c(32,15,74,58,84,50,46)
+positive_rates <- positives / tests
+positive_rates
+```
+
+\vfill
+
+- __Estimate:__ define parameter of interest, test statistic, standard error, and associated degrees of freedom.
+
+ \vfill
+\vfill
+
+- __Null and alternative hypothesis:__  choose the null and alternative hypothesis.
+
+  
+    
+
+\vfill
+
+- __confidence interval:__ The confidence interval is $\hat{\theta} \pm t^{.975}_{n-1} se(\hat{\theta})$ = 
+
+\vfill
+- __test statistic:__ the t-score 
+
+\vfill
+
+- __p-value:__ describes the deviation of the data from the null, formally the probability of observing something at least as extreme as the observed test statistic. 
+
+```{r}
+t.test(positive_rates, mu = .1, alternative = 'two.sided')
+```
+
+\vfill
+
+The interpretation would be that there is evidence to reject the null hypothesis that the true positive rate is .1. Furthermore, a confidence interval for the positive rate is (`r round(mean(positive_rates) - qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`, `r round(mean(positive_rates) + qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`).
+
+\newpage
+
+#### Type 1 / Type 2 errors
+
+The authors state that they don't like the idea of Type 1 and Type 2 errors.
+
+- __type 1 error:__ 
+
+
+\vfill
+
+- __type 2 error:__ 
+
+\vfill
+
+The authors state that the fundamental problem with type 1 and type 2 errors is that in many problems the null hypothesis cannot be true.
+
+\vfill
+
+Type I and type II errors are based on a deterministic (binary) approach to science that might be appropriate for large effects.
+
+\vfill
+
+#### Type M (magnitude) and Type S (sign) errors
+
+Both a type M and type S error could occur when making a claim.
+
+\vfill
+
+A __type S error:__ 
+\vfill
+
+A __type M error:__ 
+\vfill
+
+The current publishing incentives, _statistical significance_, can lead to type M errors. In particular the requirement for statistical significance creates a lower bound on the estimated effect size.
+
+\vfill
+
+\newpage
+
+The authors don't tend to use NHST in their own work, and neither do I. They state that just about every treatment will have _some effect_, and few regression coefficients will be _exactly zero_.
+
+\vfill
+
+A major issue with the use of NHST is when researchers seek to confirm a hypothesis (say hypothesis A), by coming up with an alternative hypothesis (hypothesis B). Then if hypothesis B is rejected, this is used as evidence 
+
+### Problems with Statistical Signficance
+
+First of all, there is a disconnect between significance in the common vernacular and the statistical vernacular.
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+\newpage
+
+### Moving Beyond Hypothesis Testing
+
+One reason that hypothesis testing is still widely used is that there are not clear, widely accepted alternatives.
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+
+\vfill
+
+

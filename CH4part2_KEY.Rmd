@@ -1,0 +1,215 @@
+---
+title: "Regression and Other Stories: Ch 4.4 - 4.7"
+output: pdf_document
+---
+
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.height = 3, fig.width = 5)
+library(tidyverse) 
+library(gridExtra)
+set.seed(09092020)
+```
+
+When conducting data analysis, we want to avoid too strong of conclusions based on the data. Hypothesis testing and error analysis were developed to quantify this issue.
+
+### Statistical Significance
+
+- A common, binary, decision rule that __is not__ recommended is based on _statistical significance._
+ 
+\vfill
+
+- Statistical significance is defined as *a p-value less than .05 (or other threshold), relative to some null hypothesis defined as no effect*
+
+\vfill
+
+- Statistical significance decisions for a regression coefficient *correspond to whether a confidence interval contains zero or whether the point estimate is within two standard errors of zero.*
+
+\vfill
+
+- More generally, an estimate is not statistically significant *if the observed value could be explained by simple chance (based on the null model).*
+
+\vfill
+
+### Hypothesis Tests
+
+The Bozeman school district has identified the proportion of covid tests that are positive as an important metric for reopening or closing schools. While describing the hypothesis test, think about how to construct a test focused on the positive test rate.
+
+\vfill
+
+- __Estimate:__ *define parameter of interest, test statistic, standard error, and associated degrees of freedom.*
+
+
+
+\vfill
+
+- __Null and alternative hypothesis:__  choose the null and alternative hypothesis.
+
+\vfill 
+
+- __test statistic:__ the t-score *is $|\hat{\theta}|/se(\hat{\theta})$*
+
+\vfill
+
+- __confidence interval:__ The confidence interval is $\hat{\theta} \pm t^{.975}_{n-1} se(\hat{\theta})$.
+
+\vfill
+
+- __p-value:__ describes the deviation of the data from the null, *formally the probability of observing something at least as extreme as the observed test statistic.*
+
+\newpage
+
+Example: I wasn't able to find reliable data from Gallatin County, but I did get data from Virginia Tech [https://ready.vt.edu/dashboard.html](https://ready.vt.edu/dashboard.html).
+
+We will treat the last 7 days of tests as 7 data points
+
+```{r}
+tests <- c(181,181,406,326,311,307,260)
+positives <- c(32,15,74,58,84,50,46)
+positive_rates <- positives / tests
+positive_rates
+```
+
+\vfill
+
+- __Estimate:__ *define parameter of interest, test statistic, standard error, and associated degrees of freedom.*
+
+  - $\theta$ = true underlying proportion of positive tests
+  - mean of positive test rate, $\hat{\theta} = \bar{y}$ = `r round(mean(positive_rates),3)` 
+  - $se(\hat{\theta}) = s_y/\sqrt{n} =$ `r round(sd(positive_rates)/ sqrt(7), 3)`
+  - $df = n-1 = 6$
+
+\vfill
+
+- __Null and alternative hypothesis:__  choose the null and alternative hypothesis.
+
+    - *Null: $\theta = .1$*
+    
+    - *Alternative: $\theta \neq .1$*
+    
+
+\vfill
+
+- __confidence interval:__ The confidence interval is $\hat{\theta} \pm t^{.975}_{n-1} se(\hat{\theta})$ = (`r round(mean(positive_rates) - qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`, `r round(mean(positive_rates) + qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`)
+
+\vfill
+- __test statistic:__ the t-score *is $|\hat{\theta} - \theta_0|/se(\hat{\theta})$* = `r round((mean(positive_rates) - .1) / (sd(positive_rates)/ sqrt(7)),3)`
+
+\vfill
+
+- __p-value:__ describes the deviation of the data from the null, *formally the probability of observing something at least as extreme as the observed test statistic.* The p-value is `r 2 *round(1 - pt( (mean(positive_rates) - .1) / (sd(positive_rates)/ sqrt(7)),6), 3)`
+
+```{r}
+t.test(positive_rates, mu = .1, alternative = 'two.sided')
+```
+
+\vfill
+
+The interpretation would be that there is evidence to reject the null hypothesis that the true positive rate is .1. Furthermore, a confidence interval for the positive rate is (`r round(mean(positive_rates) - qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`, `r round(mean(positive_rates) + qt(.975,6) * sd(positive_rates)/ sqrt(7),3)`).
+
+\newpage
+
+#### Type 1 / Type 2 errors
+
+The authors state that they don't like the idea of Type 1 and Type 2 errors.
+
+- __type 1 error:__ *the probability of falsely rejecting a null hypothesis*
+
+
+\vfill
+
+- __type 2 error:__ *the probability of not rejecting a null hypothesis that is false.*
+
+\vfill
+
+The authors state that the fundamental problem with type 1 and type 2 errors is that in many problems the null hypothesis cannot be true.
+
+\vfill
+
+Type I and type II errors are based on a deterministic (binary) approach to science that might be appropriate for large effects.
+
+\vfill
+
+#### Type M (magnitude) and Type S (sign) errors
+
+Both a type M and type S error could occur when making a claim.
+
+\vfill
+
+A __type S error:__ *occurs when the sign of the estimated effect is in the opposite direction as the true effect.*
+
+\vfill
+
+A __type M error:__ *occurs when the magnitude of the estimated effect is much different than the true effect*.
+
+\vfill
+
+The current publishing incentives, _statistical significance_, can lead to type M errors. In particular the requirement for statistical significance creates a lower bound on the estimated effect size.
+
+\vfill
+
+\newpage
+
+The authors don't tend to use NHST in their own work, and neither do I. They state that just about every treatment will have _some effect_, and few regression coefficients will be _exactly zero_.
+
+\vfill
+
+A major issue with the use of NHST is when researchers seek to confirm a hypothesis (say hypothesis A), by coming up with an alternative hypothesis (hypothesis B). Then if hypothesis B is rejected, this is used as evidence *in support of hypothesis A. Rejection of A does not necessarily tell us anything about B.*
+
+### Problems with Statistical Signficance
+
+First of all, there is a disconnect between significance in the common vernacular and the statistical vernacular.
+
+\vfill
+
+*Statistical significance is not the same as practical significance*
+
+\vfill
+
+*Non-significance is not the same as zero*
+
+\vfill
+
+*The difference between .049 and .051 is not significant*
+
+\vfill
+
+*Researcher degrees of freedom, p-hacking, and forking paths.*
+
+\vfill
+
+- *multiple comparisons or multiple potential comparisons* 
+
+\vfill
+
+- *Researcher degrees of freedom: There are many different ways to code data, make model choices with forking paths that can result in p-hacking*
+
+\vfill
+
+- *The file drawer effect, only significant results are published is also problematic and can also lead to overestimates of effects which are not reproducible.*
+
+\vfill
+
+\newpage
+
+### Moving Beyond Hypothesis Testing
+
+One reason that hypothesis testing is still widely used is that there are not clear, widely accepted alternatives.
+
+\vfill
+
+- *Analyze all your data*
+
+\vfill
+
+- *Present all comparisons, not just those that lead to statistical significance*
+
+\vfill
+
+- *Make data + code publicly available*
+
+\vfill
+
+- *pre-register studies*
+
