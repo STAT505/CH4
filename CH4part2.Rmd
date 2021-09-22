@@ -193,4 +193,9 @@ One reason that hypothesis testing is still widely used is that there are not cl
 
 \vfill
 
+\newpage
+
+In a follow up article to the American Statistical Association's statement on p-values, a 2019 article title _Moving to a World Beyond "p < .05"_ provides suggestions on _what to do_.
+
+\vfill
 
